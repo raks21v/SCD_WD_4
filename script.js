@@ -1,65 +1,49 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+let taskList = [];
+
+function addTask() {
+    const taskInput = document.getElementById('task-input');
+    const taskDate = document.getElementById('task-date');
+
+    if (taskInput.value.trim() !== '') {
+        const task = {
+            id: Date.now(),
+            text: taskInput.value,
+            date: taskDate.value,
+            completed: false
+        };
+        taskList.push(task);
+        displayTasks();
+        taskInput.value = '';
+        taskDate.value = '';
+    }
 }
 
-.app-container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
+function displayTasks() {
+    const taskListElement = document.getElementById('task-list');
+    taskListElement.innerHTML = '';
+
+    taskList.forEach(task => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${task.text} - ${task.date}</span>
+            <div>
+                <button onclick="markCompleted(${task.id})">Complete</button>
+                <button onclick="deleteTask(${task.id})">Delete</button>
+            </div>
+        `;
+        li.className = task.completed ? 'completed' : '';
+        taskListElement.appendChild(li);
+    });
 }
 
-h1 {
-    text-align: center;
+function markCompleted(id) {
+    taskList = taskList.map(task => 
+        task.id === id ? {...task, completed: !task.completed} : task
+    );
+    displayTasks();
 }
 
-.input-section {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-input {
-    width: 65%;
-    padding: 10px;
-    margin-right: 5px;
-}
-
-button {
-    padding: 10px;
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #4cae4c;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    display: flex;
-    justify-content: space-between;
-    background-color: #e9e9e9;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 4px;
-}
-
-.completed {
-    text-decoration: line-through;
-    color: grey;
+function deleteTask(id) {
+    taskList = taskList.filter(task => task.id !== id);
+    displayTasks();
 }
